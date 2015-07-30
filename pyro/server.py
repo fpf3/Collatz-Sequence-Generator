@@ -16,9 +16,14 @@ class Collatz_Coordinator:
 		self.position = start
 		self.completed_segments = [(0,self.position)]
 	
+	@Pyro4.expose
+	def get_completed_segs(self):
+		return self.completed_segments
+
+	@Pyro4.expose
 	def get_segment(self, n):
 		return (self.position,  self.position + n)
-
+	@Pyro4.expose
 	def register_segment(self, seg):
 		if seg[1] < seg[0]:
 			return "Error: Malformed segment."
@@ -40,22 +45,23 @@ class Collatz_Coordinator:
 					return "Segment already calculated!"
 		
 		self.completed_segments.append(seg)
+		self.refresh_position()
+		
 		return "Added segment."
 
+	@Pyro4.expose
+	def refresh_position(self):
+		for seg in self.completed_segments:
+			if self.position <= seg[1] and self.position >= seg[0]:
+				self.position = seg[1] + 1
+
 	
-"""
 def main(start_number):
 	Pyro4.Daemon.serveSimple(
 		{
 		Collatz_Coordinator(start_number): "coordinator"
 		},
-		ns = True)
+		ns = True, host="HAL", verbose=True)
 
 if __name__ == "__main__":
-	main(start_number)
-
-"""
-
-
-
-
+	main(1) # TODO: Fix start_number sequence
